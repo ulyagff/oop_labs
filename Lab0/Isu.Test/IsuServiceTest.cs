@@ -36,8 +36,7 @@ public class IsuService
     public void CreateGroupWithInvalidName_ThrowException()
     {
         Services.IsuService service = new Services.IsuService();
-        GroupName groupName = new GroupName("MN105");
-        Assert.Throws<IsuException>(() => service.AddGroup(groupName));
+        Assert.Throws<IsuException>(() => new GroupName("MN105"));
     }
 
     [Fact]
