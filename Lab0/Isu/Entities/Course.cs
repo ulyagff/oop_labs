@@ -18,11 +18,11 @@ public class Course
 
     public void AddGroup(Group newGroup)
     {
-        if (_groups.ContainsKey(newGroup.NameOfGroup))
-            throw StereotypeIsuException.CourseIsContainsGroup(NumberOfCourse.NumberOfCourse, newGroup.NameOfGroup.GroupNameStr);
-        if (newGroup.NameOfGroup.NumberOfCourse != NumberOfCourse)
-            throw StereotypeIsuException.CourseIsNotContainGroup(NumberOfCourse.NumberOfCourse, newGroup.NameOfGroup.GroupNameStr);
-        _groups.Add(newGroup.NameOfGroup, newGroup);
+        if (_groups.ContainsKey(newGroup.Name))
+            throw GroupExceptionFactory.CourseIsContainsGroup(NumberOfCourse.NumberOfCourse, newGroup.Name.GroupNameStr);
+        if (newGroup.Name.NumberOfCourse != NumberOfCourse)
+            throw GroupExceptionFactory.CourseIsNotContainGroup(NumberOfCourse.NumberOfCourse, newGroup.Name.GroupNameStr);
+        _groups.Add(newGroup.Name, newGroup);
     }
 
     public Group? FindGroup(GroupName groupName)
@@ -32,9 +32,7 @@ public class Course
 
     public ReadOnlyCollection<Group> GiveGroups()
     {
-        List<Group> dictionaryToList = new List<Group>(_groups.Count);
-        foreach (var group in _groups)
-            dictionaryToList.Add(group.Value);
+        List<Group> dictionaryToList = _groups.Values.ToList();
         ReadOnlyCollection<Group> readOnlyList = dictionaryToList.AsReadOnly();
         return readOnlyList;
     }

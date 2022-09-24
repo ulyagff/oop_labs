@@ -17,11 +17,11 @@ public class Faculty
 
     public void AddGroup(Group newGroup)
     {
-        if (_groups.ContainsKey(newGroup.NameOfGroup))
-            throw StereotypeIsuException.FacultyIsContainsGroup(FacultyLetter.Letter, newGroup.NameOfGroup.GroupNameStr);
-        if (newGroup.NameOfGroup.Faculty != FacultyLetter)
-            throw StereotypeIsuException.FacultyIsNotContainGroup(FacultyLetter.Letter, newGroup.NameOfGroup.GroupNameStr);
-        _groups.Add(newGroup.NameOfGroup, newGroup);
+        if (_groups.ContainsKey(newGroup.Name))
+            throw GroupExceptionFactory.FacultyIsContainsGroup(FacultyLetter.Letter, newGroup.Name.GroupNameStr);
+        if (newGroup.Name.Faculty != FacultyLetter)
+            throw GroupExceptionFactory.FacultyIsNotContainGroup(FacultyLetter.Letter, newGroup.Name.GroupNameStr);
+        _groups.Add(newGroup.Name, newGroup);
     }
 
     public Group? FindGroup(GroupName groupName)

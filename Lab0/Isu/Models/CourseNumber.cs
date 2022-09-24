@@ -9,7 +9,7 @@ public class CourseNumber
     public CourseNumber(int numberOfCourse)
     {
         if ((numberOfCourse < MinCourse) & (numberOfCourse > MaxCourse))
-            throw StereotypeIsuException.IncorrectCourseNumber(numberOfCourse);
+            throw EntitiesNameExceptionFactory.IncorrectCourseNumber(numberOfCourse);
         NumberOfCourse = numberOfCourse;
     }
 

@@ -11,11 +11,11 @@ public interface IIsuService
 
     Student GetStudent(int id);
     Student? FindStudent(int id);
-    ReadOnlyCollection<Student> FindStudents(GroupName groupName);
-    ReadOnlyCollection<Student> FindStudents(CourseNumber courseNumber);
+    IReadOnlyCollection<Student> FindStudents(GroupName groupName);
+    IReadOnlyCollection<Student> FindStudents(CourseNumber courseNumber);
 
     Group? FindGroup(GroupName groupName);
-    ReadOnlyCollection<Group> FindGroups(CourseNumber courseNumber);
+    IReadOnlyCollection<Group> FindGroups(CourseNumber courseNumber);
 
     void ChangeStudentGroup(Student student, Group newGroup);
 }

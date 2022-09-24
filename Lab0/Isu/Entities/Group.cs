@@ -11,26 +11,26 @@ public class Group
     public Group(GroupName groupName)
     {
         _students = new Dictionary<int, Student>();
-        NameOfGroup = groupName;
+        Name = groupName;
     }
 
-    public GroupName NameOfGroup { get; init; }
+    public GroupName Name { get; init; }
 
     public void AddStudent(Student newStudent)
     {
         if (_students.ContainsKey(newStudent.Id))
-            throw StereotypeIsuException.GroupIsContainsStudent(newStudent.Id);
+            throw GroupExceptionFactory.GroupIsContainsStudent(newStudent.Id);
         if (_students.Count == MaxGroupSize)
-            throw StereotypeIsuException.MaxSizeGroup(MaxGroupSize);
+            throw GroupExceptionFactory.MaxSizeGroup(MaxGroupSize);
         _students.Add(newStudent.Id, newStudent);
     }
 
     public void DeleteStudent(int id)
     {
-        if (!_students.ContainsKey(id))
-            throw StereotypeIsuException.StudentIsMissingInGroup(id, NameOfGroup.GroupNameStr);
         if (_students.Count == MinGroupSize)
-            throw StereotypeIsuException.MinSizeGroup(MinGroupSize);
+            throw GroupExceptionFactory.MinSizeGroup(MinGroupSize);
+        if (!_students.ContainsKey(id))
+            throw GroupExceptionFactory.StudentIsMissingInGroup(id, Name.GroupNameStr);
         _students.Remove(id);
     }
 
@@ -41,9 +41,7 @@ public class Group
 
     public ReadOnlyCollection<Student> GiveStudents()
     {
-        List<Student> dictionaryToList = new List<Student>(_students.Count);
-        foreach (var student in _students)
-            dictionaryToList.Add(student.Value);
+        List<Student> dictionaryToList = _students.Values.ToList();
         ReadOnlyCollection<Student> readOnlyList = dictionaryToList.AsReadOnly();
         return readOnlyList;
     }

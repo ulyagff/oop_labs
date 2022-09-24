@@ -6,9 +6,9 @@ public class Student
     public Student(string? name, Group? group)
     {
         Id = _newId++;
-        if (name == null) throw new NullReferenceException();
+        if (name == null) throw new ArgumentNullException("name");
         else Name = name;
-        if (group == null) throw new NullReferenceException();
+        if (group == null) throw new ArgumentNullException("group");
         else Group = group;
     }
 
