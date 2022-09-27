@@ -6,14 +6,14 @@ namespace Isu.Services;
 
 public class IsuService : IIsuService
 {
-    private Dictionary<int, Student> _students;
+    private Dictionary<IsuIdentifier, Student> _students;
     private Dictionary<GroupName, Group> _groups;
     private Dictionary<FacultyName, Faculty> _faculties;
     private Dictionary<CourseNumber, Course> _courses;
 
     public IsuService()
     {
-        _students = new Dictionary<int, Student>();
+        _students = new Dictionary<IsuIdentifier, Student>();
         _groups = new Dictionary<GroupName, Group>();
         _faculties = new Dictionary<FacultyName, Faculty>();
         _courses = new Dictionary<CourseNumber, Course>();
@@ -43,21 +43,23 @@ public class IsuService : IIsuService
     public Student AddStudent(Group group, string name)
     {
         if (!_groups.ContainsValue(group))
-            throw IsuServiseExceptionFactory.GroupIsMissing(group.Name.GroupNameStr);
+            throw IsuServiseException.GroupIsMissing(group.Name.GroupNameStr);
         Student newStudent = new Student(name, group);
+        if (_students.ContainsKey(newStudent.Id))
+            _students.Remove(newStudent.Id);
         group.AddStudent(newStudent);
         _students.Add(newStudent.Id, newStudent);
         return newStudent;
     }
 
-    public Student GetStudent(int id)
+    public Student GetStudent(IsuIdentifier id)
     {
         if (!_students.ContainsKey(id))
-            throw IsuServiseExceptionFactory.StudentIsMissing(id);
+            throw IsuServiseException.StudentIsMissing(id.Id);
         return _students[id];
     }
 
-    public Student? FindStudent(int id)
+    public Student? FindStudent(IsuIdentifier id)
     {
         return _students.ContainsKey(id) ? _students[id] : null;
     }
@@ -65,20 +67,15 @@ public class IsuService : IIsuService
     public IReadOnlyCollection<Student> FindStudents(GroupName groupName)
     {
         if (this.FindGroup(groupName) == null)
-            throw IsuServiseExceptionFactory.GroupIsMissing(groupName.GroupNameStr);
+            throw IsuServiseException.GroupIsMissing(groupName.GroupNameStr);
         return _groups[groupName].GiveStudents();
     }
 
     public IReadOnlyCollection<Student> FindStudents(CourseNumber courseNumber)
-    {
-        List<Student> studentList = new List<Student>();
-
-        foreach (var group in _courses[courseNumber].GiveGroups())
-            studentList.AddRange(group.GiveStudents());
-
-        ReadOnlyCollection<Student> readOnlyStudentList = studentList.AsReadOnly();
-        return readOnlyStudentList;
-    }
+    => _courses[courseNumber].
+            GiveGroups().
+            SelectMany(x => x.GiveStudents()).
+            ToList();
 
     public Group? FindGroup(GroupName groupName)
     {
@@ -88,7 +85,7 @@ public class IsuService : IIsuService
     public IReadOnlyCollection<Group> FindGroups(CourseNumber courseNumber)
     {
         if (!_courses.ContainsKey(courseNumber))
-            throw IsuServiseExceptionFactory.CourseIsMissing(courseNumber.NumberOfCourse);
+            throw IsuServiseException.CourseIsMissing(courseNumber.NumberOfCourse);
         return _courses[courseNumber].GiveGroups();
     }
 

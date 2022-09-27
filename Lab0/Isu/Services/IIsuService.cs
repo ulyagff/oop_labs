@@ -9,8 +9,8 @@ public interface IIsuService
     Group AddGroup(GroupName name);
     Student AddStudent(Group group, string name);
 
-    Student GetStudent(int id);
-    Student? FindStudent(int id);
+    Student GetStudent(IsuIdentifier id);
+    Student? FindStudent(IsuIdentifier id);
     IReadOnlyCollection<Student> FindStudents(GroupName groupName);
     IReadOnlyCollection<Student> FindStudents(CourseNumber courseNumber);
 

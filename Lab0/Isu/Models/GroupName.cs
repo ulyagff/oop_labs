@@ -6,21 +6,21 @@ public class GroupName
     public GroupName(string groupName)
     {
         if (groupName == null)
-            throw EntitiesNameExceptionFactory.NullGroupName();
+            throw GroupNameException.NullGroupName();
         if (groupName.Length != 5)
-            throw EntitiesNameExceptionFactory.IncorrectLengthGroupName(groupName.Length);
+            throw GroupNameException.IncorrectLengthGroupName(groupName.Length);
         if (char.IsDigit(groupName[0]))
-            throw EntitiesNameExceptionFactory.IncorrectSymbolGroupName(0);
+            throw GroupNameException.IncorrectSymbolGroupName(0);
         for (int i = 1; i < 5; i++)
         {
             if (!char.IsDigit(groupName[i]))
-                throw EntitiesNameExceptionFactory.IncorrectSymbolGroupName(i);
+                throw GroupNameException.IncorrectSymbolGroupName(i);
         }
 
         Faculty = new FacultyName(groupName[0]);
         TrainingLevel = int.Parse(groupName[1].ToString());
-        NumberOfCourse = new CourseNumber(int.Parse(groupName[2].ToString()));
-        GroupNumber = Convert.ToInt32(groupName.Substring(3));
+        NumberOfCourse = new CourseNumber(groupName[2]);
+        GroupNumber = int.Parse(groupName.Substring(3));
         GroupNameStr = groupName;
     }
 

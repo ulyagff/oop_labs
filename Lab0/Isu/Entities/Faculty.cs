@@ -18,9 +18,9 @@ public class Faculty
     public void AddGroup(Group newGroup)
     {
         if (_groups.ContainsKey(newGroup.Name))
-            throw GroupExceptionFactory.FacultyIsContainsGroup(FacultyLetter.Letter, newGroup.Name.GroupNameStr);
+            throw GroupException.FacultyIsContainsGroup(FacultyLetter.Letter, newGroup.Name.GroupNameStr);
         if (newGroup.Name.Faculty != FacultyLetter)
-            throw GroupExceptionFactory.FacultyIsNotContainGroup(FacultyLetter.Letter, newGroup.Name.GroupNameStr);
+            throw GroupException.FacultyIsNotContainGroup(FacultyLetter.Letter, newGroup.Name.GroupNameStr);
         _groups.Add(newGroup.Name, newGroup);
     }
 

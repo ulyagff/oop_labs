@@ -40,7 +40,7 @@ public class IsuService
     [Fact]
     public void CreateGroupWithInvalidName_ThrowException()
     {
-        Assert.Throws<EntitiesNameException>(() => new GroupName("MN105"));
+        Assert.Throws<GroupNameException>(() => new GroupName("MN105"));
     }
 
     [Fact]

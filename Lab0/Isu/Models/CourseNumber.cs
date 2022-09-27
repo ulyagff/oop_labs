@@ -9,8 +9,16 @@ public class CourseNumber
     public CourseNumber(int numberOfCourse)
     {
         if ((numberOfCourse < MinCourse) & (numberOfCourse > MaxCourse))
-            throw EntitiesNameExceptionFactory.IncorrectCourseNumber(numberOfCourse);
+            throw CourseNameException.IncorrectCourseNumber(numberOfCourse);
         NumberOfCourse = numberOfCourse;
+    }
+
+    public CourseNumber(char numberOfCourse)
+    {
+        int castCourseNumber = int.Parse(numberOfCourse.ToString());
+        if ((castCourseNumber < MinCourse) & (castCourseNumber > MaxCourse))
+            throw CourseNameException.IncorrectCourseNumber(castCourseNumber);
+        NumberOfCourse = castCourseNumber;
     }
 
     public int NumberOfCourse { get; }

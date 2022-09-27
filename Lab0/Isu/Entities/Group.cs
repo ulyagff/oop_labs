@@ -7,10 +7,10 @@ public class Group
 {
     public const int MaxGroupSize = 30;
     public const int MinGroupSize = 0;
-    private Dictionary<int, Student> _students;
+    private HashSet<Student> _students;
     public Group(GroupName groupName)
     {
-        _students = new Dictionary<int, Student>();
+        _students = new HashSet<Student>();
         Name = groupName;
     }
 
@@ -18,31 +18,24 @@ public class Group
 
     public void AddStudent(Student newStudent)
     {
-        if (_students.ContainsKey(newStudent.Id))
-            throw GroupExceptionFactory.GroupIsContainsStudent(newStudent.Id);
+        if (_students.Contains(newStudent))
+            throw GroupException.GroupIsContainsStudent(newStudent.Id.Id);
         if (_students.Count == MaxGroupSize)
-            throw GroupExceptionFactory.MaxSizeGroup(MaxGroupSize);
-        _students.Add(newStudent.Id, newStudent);
+            throw GroupException.MaxSizeGroup(MaxGroupSize);
+        _students.Add(newStudent);
     }
 
-    public void DeleteStudent(int id)
+    public void DeleteStudent(Student newStudent)
     {
         if (_students.Count == MinGroupSize)
-            throw GroupExceptionFactory.MinSizeGroup(MinGroupSize);
-        if (!_students.ContainsKey(id))
-            throw GroupExceptionFactory.StudentIsMissingInGroup(id, Name.GroupNameStr);
-        _students.Remove(id);
+            throw GroupException.MinSizeGroup(MinGroupSize);
+        if (!_students.Contains(newStudent))
+            throw GroupException.StudentIsMissingInGroup(newStudent.Id.Id, Name.GroupNameStr);
+        _students.Remove(newStudent);
     }
 
-    public Student? FindStudent(int id)
+    public IReadOnlyList<Student> GiveStudents()
     {
-        return _students.ContainsKey(id) ? _students[id] : null;
-    }
-
-    public ReadOnlyCollection<Student> GiveStudents()
-    {
-        List<Student> dictionaryToList = _students.Values.ToList();
-        ReadOnlyCollection<Student> readOnlyList = dictionaryToList.AsReadOnly();
-        return readOnlyList;
+        return _students.ToList();
     }
 }

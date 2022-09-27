@@ -21,7 +21,7 @@ public class FacultyName
     {
         char.ToUpper(letter);
         if (!_abbreviations.ContainsKey(letter))
-            throw EntitiesNameExceptionFactory.FacultyIsAbsent(letter);
+            throw FacultyNameException.FacultyIsAbsent(letter);
         Letter = letter;
     }
 

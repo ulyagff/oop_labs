@@ -19,9 +19,9 @@ public class Course
     public void AddGroup(Group newGroup)
     {
         if (_groups.ContainsKey(newGroup.Name))
-            throw GroupExceptionFactory.CourseIsContainsGroup(NumberOfCourse.NumberOfCourse, newGroup.Name.GroupNameStr);
+            throw GroupException.CourseIsContainsGroup(NumberOfCourse.NumberOfCourse, newGroup.Name.GroupNameStr);
         if (newGroup.Name.NumberOfCourse != NumberOfCourse)
-            throw GroupExceptionFactory.CourseIsNotContainGroup(NumberOfCourse.NumberOfCourse, newGroup.Name.GroupNameStr);
+            throw GroupException.CourseIsNotContainGroup(NumberOfCourse.NumberOfCourse, newGroup.Name.GroupNameStr);
         _groups.Add(newGroup.Name, newGroup);
     }
 
@@ -30,10 +30,8 @@ public class Course
         return _groups.ContainsKey(groupName) ? _groups[groupName] : null;
     }
 
-    public ReadOnlyCollection<Group> GiveGroups()
+    public IReadOnlyCollection<Group> GiveGroups()
     {
-        List<Group> dictionaryToList = _groups.Values.ToList();
-        ReadOnlyCollection<Group> readOnlyList = dictionaryToList.AsReadOnly();
-        return readOnlyList;
+        return _groups.Values.ToList();
     }
 }
