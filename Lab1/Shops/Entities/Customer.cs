@@ -3,25 +3,17 @@ namespace Shops.Entities;
 
 public class Customer
 {
-    private decimal _balance;
-    public Customer(decimal balance)
+    public Customer(decimal balance = 0)
     {
         Balance = balance;
     }
 
-    public Customer()
-    {
-            Balance = 0;
-    }
+    public decimal Balance { get; private set; }
 
-    public decimal Balance
+    public void TakeMoney(decimal sum)
     {
-        get => _balance;
-        set
-        {
-            if (value < 0)
-                throw CustomerException.NegativeBalance();
-            _balance = value;
-        }
+        if (Balance < sum)
+            throw CustomerException.InsufficientFunds();
+        Balance -= sum;
     }
 }

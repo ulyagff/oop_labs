@@ -6,8 +6,8 @@ public class Product
 {
     public Product(string? name)
     {
-        if (name == null) throw new ArgumentNullException("name");
-        else Name = name;
+        ArgumentNullException.ThrowIfNull(name);
+        Name = name;
         Id = Guid.NewGuid();
     }
 

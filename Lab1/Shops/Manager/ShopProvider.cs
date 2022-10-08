@@ -25,7 +25,9 @@ public class ShopsProvider
     public Shop? FindLowestPrice(List<ProductInCustomerBasket> basket)
     {
         return _shops
-            .Where(i => i.RequestPrice(basket) != -1)
-            .MinBy(i => i.RequestPrice(basket));
+            .Select(i => (Shop: i, Price: i.FindRequestPrice(basket)))
+            .Where(x => x.Price != null)
+            .MinBy(i => i.Price)
+            .Shop;
     }
 }

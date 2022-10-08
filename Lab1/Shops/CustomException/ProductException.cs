@@ -8,4 +8,9 @@ public class ProductException : ShopsException
     {
         return new ProductException("Price must not be negative");
     }
+
+    public static ProductException NegativeAmount()
+    {
+        return new ProductException("Amount must not be negative");
+    }
 }

@@ -6,10 +6,14 @@ namespace Shops.Models;
 public class ProductInformation
 {
     private decimal _price;
-    public ProductInformation(Product productName, decimal price, uint amount)
+    private int _amount;
+
+    public ProductInformation(Product productName, decimal price, int amount)
     {
         ProductName = productName;
         Price = price;
+        if (amount < 0)
+            throw ProductException.NegativeAmount();
         Amount = amount;
     }
 
@@ -26,5 +30,14 @@ public class ProductInformation
         }
     }
 
-    public uint Amount { get; set; }
+    public int Amount
+    {
+        get => _amount;
+        set
+        {
+            if (value < 0)
+                throw ProductException.NegativeAmount();
+            _amount = value;
+        }
+    }
 }

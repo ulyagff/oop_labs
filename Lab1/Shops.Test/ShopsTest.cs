@@ -30,7 +30,7 @@ public class ShopsTest
         var shoppingBag = new List<ProductInCustomerBasket>();
         shoppingBag.Add(new ProductInCustomerBasket(product1, 1));
         shop1.Delivery(deliveryProducts);
-        decimal recPrice = shop1.RequestPrice(shoppingBag);
+        decimal recPrice = shop1.TotalPrice(shoppingBag);
 
         shop1.Buy(customer1, shoppingBag);
         Assert.Equal(customer1.Balance, 1000 - recPrice);
@@ -47,7 +47,7 @@ public class ShopsTest
         shoppingBag.Add(new ProductInCustomerBasket(product1, 1));
         shop1.Delivery(deliveryProducts);
         shop1.ChangePrice(product1, 150);
-        Assert.Equal(150, shop1.RequestPrice(shoppingBag));
+        Assert.Equal(150, shop1.TotalPrice(shoppingBag));
     }
 
     [Fact]
@@ -97,8 +97,8 @@ public class ShopsTest
         shoppingBag.Add(new ProductInCustomerBasket(product3, 1));
 
         shop1.Delivery(deliveryProducts);
-        decimal recPrice = shop1.RequestPrice(shoppingBag);
+        decimal recPrice = shop1.TotalPrice(shoppingBag);
         shop1.Buy(customer1, shoppingBag);
-        Assert.Equal(customer1.Balance, 10000 - recPrice);
+        Assert.Equal(10000 - recPrice, customer1.Balance);
     }
 }

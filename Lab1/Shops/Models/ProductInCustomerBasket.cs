@@ -4,12 +4,14 @@ namespace Shops.Models;
 
 public class ProductInCustomerBasket
 {
-    public ProductInCustomerBasket(Product productName, uint amount)
+    public ProductInCustomerBasket(Product productName, int amount)
     {
         ProductName = productName;
+        if (amount < 0)
+            throw ProductException.NegativeAmount();
         Amount = amount;
     }
 
     public Product ProductName { get; }
-    public uint Amount { get; set; }
+    public int Amount { get; set; }
 }

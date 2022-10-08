@@ -4,7 +4,7 @@ namespace Shops.Entities;
 
 public class Shop
 {
-    private ShopStorage _storage;
+    private readonly ShopStorage _storage;
 
     public Shop(string? name, string? address)
     {
@@ -25,18 +25,26 @@ public class Shop
         _storage.ChangePrice(product, price);
     }
 
-    public decimal RequestPrice(List<ProductInCustomerBasket> basket)
+    public decimal? FindRequestPrice(List<ProductInCustomerBasket> basket)
     {
         decimal totalPrice = 0;
         foreach (var product in basket)
         {
             if (_storage.FindProduct(product.ProductName) == null)
-                return -1;
+                return null;
             if (_storage.RequestAmount(product.ProductName) < product.Amount)
-                return -1;
+                return null;
             totalPrice += _storage.RequestPrice(product);
         }
 
+        return totalPrice;
+    }
+
+    public decimal TotalPrice(List<ProductInCustomerBasket> basket)
+    {
+        decimal totalPrice = 0;
+        foreach (var product in basket)
+            totalPrice += _storage.RequestPrice(product);
         return totalPrice;
     }
 
@@ -49,27 +57,22 @@ public class Shop
     {
         foreach (var product in basket)
         {
-            decimal totalPrice;
-
             if (_storage.RequestAmount(product.ProductName) <= product.Amount)
                 throw ShopException.NotEnoughProductInShop(product);
+        }
 
+        customer.TakeMoney(TotalPrice(basket));
+
+        foreach (var product in basket)
+        {
             while (!_storage.AlreadyContainsProduct(product))
             {
-                totalPrice = _storage.ActualProductInformation(product).Amount * _storage.ActualProductInformation(product).Price;
-                if (totalPrice > customer.Balance)
-                    throw ShopException.InsufficientFunds();
-                customer.Balance -= totalPrice;
                 product.Amount -= _storage.ActualProductInformation(product).Amount;
                 _storage.DeleteProducts(product);
             }
 
             if (_storage.AlreadyContainsProduct(product))
             {
-                totalPrice = product.Amount * _storage.ActualProductInformation(product).Price;
-                if (totalPrice > customer.Balance)
-                    throw ShopException.InsufficientFunds();
-                customer.Balance -= totalPrice;
                 _storage.ActualProductInformation(product).Amount -= product.Amount;
                 product.Amount = 0;
                 _storage.TryDeleteProducts(product);

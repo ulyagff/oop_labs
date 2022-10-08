@@ -33,17 +33,17 @@ public class ShopStorage
         _products[product].Peek().Price = price;
     }
 
-    public uint RequestAmount(Product product)
+    public int RequestAmount(Product product)
     {
         if (!_products.ContainsKey(product))
             throw ShopStorageException.ProductNotRegister(product);
-        return (uint)_products[product].Sum(x => x.Amount);
+        return _products[product].Sum(x => x.Amount);
     }
 
     public decimal RequestPrice(ProductInCustomerBasket product)
     {
         decimal totalPrice = 0;
-        uint productAmount = product.Amount;
+        int productAmount = product.Amount;
         if (RequestAmount(product.ProductName) < productAmount)
             throw ShopException.NotEnoughProductInShop(product);
 

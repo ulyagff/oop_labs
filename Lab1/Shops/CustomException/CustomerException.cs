@@ -6,8 +6,8 @@ public class CustomerException : ShopsException
 {
     private CustomerException(string message) { }
 
-    public static CustomerException NegativeBalance()
+    public static CustomerException InsufficientFunds()
     {
-        return new CustomerException("Balance must not be negative");
+        return new CustomerException($"There are not enough funds on the account of the customer");
     }
 }
