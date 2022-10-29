@@ -17,12 +17,15 @@ public class ExtraStudent
     public ExtraGroup ExtraGroup { get; set; }
     public ExtraStudyStream? ExtraStudyStream { get; set; }
 
-    public void AddExtraStudy(ExtraStudyStream extraStudyStream)
+    public void AddExtraStudy(ExtraStudyStream? extraStudyStream)
     {
+        if (extraStudyStream == null)
+            throw ExtraStudentException.ExtraStudyStreamIsAbsent();
         if (ExtraStudyStream != null)
             throw ExtraStudentException.StudentHasExtraStudy();
         if (ExtraGroup.TimeTable.CountStudyDays() == 0)
             throw TimeTableException.UseEmptyTimeTable();
         ExtraStudyStream = extraStudyStream;
+        extraStudyStream.AddStudent(this);
     }
 }

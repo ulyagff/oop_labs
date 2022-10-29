@@ -7,15 +7,16 @@ namespace Isu.Extra.Entities;
 
 public class ExtraGroup
 {
-    public ExtraGroup(Group group, TimeTable timeTable)
+    public ExtraGroup(Group group, TimeTable timeTable, MegaFaculty? megaFaculty)
     {
         Group = group;
         TimeTable = timeTable;
-        MegaFaculty = MegaFacultyName.CorrelateFaculty(group.Name.Faculty);
+        ArgumentNullException.ThrowIfNull(megaFaculty);
+        MegaFaculty = megaFaculty;
     }
 
     public Group Group { get; }
-    public MegaFacultyName MegaFaculty { get; }
+    public MegaFaculty MegaFaculty { get; }
 
     public TimeTable TimeTable { get; private set; }
 

@@ -10,9 +10,9 @@ public class TimeTableException : IsuExtraException
         return new TimeTableException($"the number of classes should be 8. {message}");
     }
 
-    public static TimeTableException DayIsContained(Enum day, string message = "")
+    public static TimeTableException StudyClassIsContained(string message = "")
     {
-        return new TimeTableException($"{day} is already contained in the time table. {message}");
+        return new TimeTableException($"StudyClass is already contained in the time table. {message}");
     }
 
     public static TimeTableException UseEmptyTimeTable(string message = "")

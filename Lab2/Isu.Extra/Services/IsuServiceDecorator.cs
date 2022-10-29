@@ -7,12 +7,13 @@ using Isu.Services;
 
 namespace Isu.Extra.Services;
 
-public class IsuServiceDecorator : IIsuService
+public class IsuServiceDecorator : IIsuServiceDecorator
 {
     private readonly IIsuService _decoratee;
     private Dictionary<IsuIdentifier, ExtraStudent> _students;
     private Dictionary<GroupName, ExtraGroup> _groups;
     private List<ExtraStudy> _extraStudies;
+    private List<MegaFaculty> _megaFaculties;
 
     public IsuServiceDecorator(IIsuService isuService)
     {
@@ -20,12 +21,34 @@ public class IsuServiceDecorator : IIsuService
         _groups = new Dictionary<GroupName, ExtraGroup>();
         _students = new Dictionary<IsuIdentifier, ExtraStudent>();
         _extraStudies = new List<ExtraStudy>();
+        _megaFaculties = new List<MegaFaculty>();
+    }
+
+    public MegaFaculty AddMegaFaculty(string name, List<FacultyName> listFaculty)
+    {
+        if (_megaFaculties
+                .FirstOrDefault(i => i.MegaFacultyName == name) != null)
+            throw IsuExtraServiceException.MegaFacultyIsContained();
+        var newMegaFaculty = new MegaFaculty(name, listFaculty);
+        _megaFaculties.Add(newMegaFaculty);
+        return newMegaFaculty;
+    }
+
+    public MegaFaculty GetMegaFaculty(string name)
+    {
+        var megaFaculty = _megaFaculties
+            .FirstOrDefault(i => i.MegaFacultyName == name);
+        if (megaFaculty == null)
+            throw MegaFacultyNameException.MegaFacultyIsAbsent(name);
+        return megaFaculty;
     }
 
     public Group AddGroup(GroupName name)
     {
         Group newGroup = _decoratee.AddGroup(name);
-        _groups.Add(newGroup.Name, new ExtraGroup(newGroup, TimeTable.Empty()));
+        var groupMegafaculty = _megaFaculties
+            .FirstOrDefault(i => i.ContainsFaculty(name.Faculty));
+        _groups.Add(newGroup.Name, new ExtraGroup(newGroup, TimeTable.Empty(), groupMegafaculty));
         return newGroup;
     }
 
@@ -42,7 +65,7 @@ public class IsuServiceDecorator : IIsuService
         _students[student.Id].ExtraGroup = _groups[newGroup.Name];
     }
 
-    public ExtraStudy AddExtraStudy(string name, MegaFacultyName megaFaculty, List<ExtraStudyStream> streams)
+    public ExtraStudy AddExtraStudy(string name, MegaFaculty megaFaculty, List<ExtraStudyStream> streams)
     {
         if (_extraStudies
             .Any(i => i.MegaFaculty == megaFaculty))
@@ -58,7 +81,7 @@ public class IsuServiceDecorator : IIsuService
         extraGroup.SetTimeTable(timeTable);
     }
 
-    public void AddExtraStudyToStudent(ExtraStudent student, MegaFacultyName megaFaculty)
+    public void AddExtraStudyToStudent(ExtraStudent student, MegaFaculty megaFaculty)
     {
         if (megaFaculty == student.ExtraGroup.MegaFaculty)
             throw IsuExtraServiceException.MegaFacultiesAreSimilar(student.Student.Id);
@@ -68,17 +91,7 @@ public class IsuServiceDecorator : IIsuService
             .FirstOrDefault();
         if (extraStudy == null)
             throw IsuExtraServiceException.ExtraStudyIsAbsent();
-
-        var extraStudyStreamForStudent = extraStudy.Streams
-            .Where(i => !i.IsFull())
-            .Where(i => !i.TimeTable.IsIntersection(student.ExtraGroup.TimeTable))
-            .ToList()
-            .FirstOrDefault();
-        if (extraStudyStreamForStudent == null)
-            throw IsuExtraServiceException.ExtraStudyStreamIsAbsent();
-
-        student.AddExtraStudy(extraStudyStreamForStudent);
-        extraStudyStreamForStudent.AddStudent(student);
+        extraStudy.AddExtraStudyStreamToStudent(student);
     }
 
     public void DeleteExtraStudyStudent(ExtraStudent student)

@@ -4,8 +4,8 @@ namespace Isu.Extra.Models;
 
 public class GroupStudyClass : StudyClass
 {
-    public GroupStudyClass(Group group, Lecturer lecturer, int classTime, string classroom, string nameStudyClass)
-        : base(lecturer, classTime, nameStudyClass)
+    public GroupStudyClass(Group group, Lecturer lecturer, int classTime, string classroom, string nameStudyClass, DayOfWeek day)
+        : base(lecturer, classTime, nameStudyClass, day)
     {
         ArgumentNullException.ThrowIfNull(group);
         Group = group;

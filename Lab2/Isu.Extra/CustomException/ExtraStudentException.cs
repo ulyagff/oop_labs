@@ -13,4 +13,9 @@ public class ExtraStudentException : IsuExtraException
     {
         return new ExtraStudentException($"the student has not a extra study. {message}");
     }
+
+    public static ExtraStudentException ExtraStudyStreamIsAbsent(string message = "")
+    {
+        return new ExtraStudentException($"there is no Extra Study Stream without intersections or with empty places. {message}");
+    }
 }

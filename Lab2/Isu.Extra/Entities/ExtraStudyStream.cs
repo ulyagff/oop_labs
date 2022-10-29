@@ -10,7 +10,7 @@ public class ExtraStudyStream
     private readonly int _maxStreamSize;
     private HashSet<ExtraStudent> _students;
 
-    public ExtraStudyStream(int maxSize, MegaFacultyName megaFaculty, TimeTable timeTable)
+    public ExtraStudyStream(int maxSize, MegaFaculty megaFaculty, TimeTable timeTable)
     {
         _students = new HashSet<ExtraStudent>();
         _maxStreamSize = maxSize;
@@ -19,7 +19,7 @@ public class ExtraStudyStream
     }
 
     public TimeTable TimeTable { get; }
-    public MegaFacultyName MegaFaculty { get; }
+    public MegaFaculty MegaFaculty { get; }
 
     public void AddStudent(ExtraStudent student)
     {
@@ -42,8 +42,5 @@ public class ExtraStudyStream
         return false;
     }
 
-    public IReadOnlyCollection<ExtraStudent> GetStudents()
-    {
-        return _students.ToList();
-    }
+    public IReadOnlyCollection<ExtraStudent> GetStudents() => _students;
 }

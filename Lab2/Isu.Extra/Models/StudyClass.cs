@@ -4,8 +4,9 @@ namespace Isu.Extra.Models;
 
 public class StudyClass
 {
-    public StudyClass(Lecturer lecturer, int classTime, string nameStudyClass)
+    public StudyClass(Lecturer lecturer, int classTime, string nameStudyClass, DayOfWeek day)
     {
+        WeekDay = day;
         ArgumentNullException.ThrowIfNull(lecturer);
         Lecturer = lecturer;
         if (classTime < 9 && classTime > 0)
@@ -14,6 +15,7 @@ public class StudyClass
         NameStudyClass = nameStudyClass;
     }
 
+    public DayOfWeek WeekDay { get; }
     public Lecturer Lecturer { get; }
     public int ClassTime { get; }
     public string NameStudyClass { get; }

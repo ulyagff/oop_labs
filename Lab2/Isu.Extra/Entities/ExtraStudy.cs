@@ -6,7 +6,8 @@ namespace Isu.Extra.Entities;
 
 public class ExtraStudy
 {
-    public ExtraStudy(string? name, MegaFacultyName? megaFaculty, List<ExtraStudyStream> streams)
+    private List<ExtraStudyStream> _streams;
+    public ExtraStudy(string? name, MegaFaculty? megaFaculty, List<ExtraStudyStream> streams)
     {
         ArgumentNullException.ThrowIfNull(name);
         Name = name;
@@ -14,15 +15,20 @@ public class ExtraStudy
         MegaFaculty = megaFaculty;
         if (!streams.Any())
             throw ExtraStudyException.StreamsListIsEmpty();
-        Streams = streams;
+        _streams = streams;
     }
 
     public string Name { get; }
-    public MegaFacultyName MegaFaculty { get; }
-    public List<ExtraStudyStream> Streams { get; }
+    public MegaFaculty MegaFaculty { get; }
+    public IReadOnlyCollection<ExtraStudyStream> GetExtraStudyStreams() => _streams;
 
-    public IReadOnlyCollection<ExtraStudyStream> GetExtraStudyStreams()
+    public void AddExtraStudyStreamToStudent(ExtraStudent student)
     {
-        return Streams;
+        var extraStudyStreamForStudent = _streams
+            .Where(i => !i.IsFull())
+            .Where(i => !i.TimeTable.IsIntersection(student.ExtraGroup.TimeTable))
+            .ToList()
+            .FirstOrDefault();
+        student.AddExtraStudy(extraStudyStreamForStudent);
     }
 }

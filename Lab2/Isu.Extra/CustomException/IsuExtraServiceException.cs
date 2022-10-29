@@ -15,11 +15,6 @@ public class IsuExtraServiceException : IsuExtraException
         return new IsuExtraServiceException($"There is no Extra Study of the Megafaculty. {message}");
     }
 
-    public static IsuExtraServiceException ExtraStudyStreamIsAbsent(string message = "")
-    {
-        return new IsuExtraServiceException($"there is no Extra Study Stream without intersections or with empty places. {message}");
-    }
-
     public static IsuExtraServiceException ExtraGroupIsMissing(GroupName groupName, string message = "")
     {
         return new IsuExtraServiceException($"there is no Extra Study Group {groupName}. {message}");
@@ -28,5 +23,10 @@ public class IsuExtraServiceException : IsuExtraException
     public static IsuExtraServiceException ExtraStudentIsMissing(IsuIdentifier id, string message = "")
     {
         return new IsuExtraServiceException($"there is no Extra Student {id.Id}. {message}");
+    }
+
+    public static IsuExtraServiceException MegaFacultyIsContained(string message = "")
+    {
+        return new IsuExtraServiceException("megafaculty is already contained. {message}");
     }
 }

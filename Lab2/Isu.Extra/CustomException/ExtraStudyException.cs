@@ -6,9 +6,9 @@ public class ExtraStudyException : IsuExtraException
 {
     private ExtraStudyException(string message) { }
 
-    public static ExtraStudyException ExtraStudyIsExist(MegaFacultyName megaFacultyName, string message = "")
+    public static ExtraStudyException ExtraStudyIsExist(MegaFaculty megaFacultyName, string message = "")
     {
-        return new ExtraStudyException($"Extra study of megafaculty {megaFacultyName.MegaFaculty} is already exist. {message}");
+        return new ExtraStudyException($"Extra study of megafaculty {megaFacultyName.MegaFacultyName} is already exist. {message}");
     }
 
     public static ExtraStudyException StreamsListIsEmpty(string message = "")
