@@ -1,17 +1,24 @@
-﻿using Backups.Visitor;
+﻿using Backups.Path;
+using Backups.Visitor;
 
 namespace Backups.RepoObject;
 
 public class RepoFile : IRepoFile
 {
-    public RepoFile(Func<Stream> openStream, string name)
+    private Func<Stream> _funcOpenStream;
+
+    public RepoFile(Func<Stream> openStream, IPath name)
     {
         Name = name;
-        OpenStream = openStream;
+        _funcOpenStream = openStream;
     }
 
-    public string Name { get; }
-    public Func<Stream> OpenStream { get; }
+    public IPath Name { get; }
+
+    public Stream OpenStream()
+    {
+        return _funcOpenStream();
+    }
 
     public void Accept(IVisitor visitor)
     {

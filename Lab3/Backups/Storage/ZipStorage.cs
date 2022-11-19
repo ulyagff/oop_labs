@@ -1,4 +1,6 @@
 ﻿using System.IO.Compression;
+using Backups.BackupsException;
+using Backups.Path;
 using Backups.RepoObject;
 using Backups.Repository;
 using Backups.ZipObject;
@@ -10,28 +12,25 @@ public class ZipStorage : IStorage
 {
     private readonly IRepository _repository;
     private readonly ZipFolder _zipFolder;
-    private readonly string _pathToZip;
+    private readonly IPath _pathToZip;
 
-    public ZipStorage(IRepository repository, ZipFolder zipFolder, string pathToZip)
+    public ZipStorage(IRepository repository, ZipFolder zipFolder, IPath pathToZip)
     {
         _repository = repository;
         _zipFolder = zipFolder;
         _pathToZip = pathToZip;
     }
 
-    public List<IRepoObject> ReturnRepoObjects()
+    public IReadOnlyCollection<IRepoObject> ReturnRepoObjects()
     {
-        var listRepoObjects = new List<IRepoObject>();
-        Stream temp = _repository.OpenWrite(_pathToZip);
-        var zipArchive = new ZipArchive(temp);
-        foreach (var entry in zipArchive.Entries)
-        {
-            IZipObject zipObject = _zipFolder
-                .ListZipObjects()
-                .First(i => i.Name == entry.Name);
-            listRepoObjects.Add(zipObject.ReturnRepoObject(_pathToZip, _repository));
-        }
+        IRepoObject repoObject = _repository.ReturnRepoObject(_pathToZip);
+        RepoFile archive = repoObject as RepoFile ?? throw RepoObjectException.ExpectedRepoFile();
+        using Stream archiveStream = archive.OpenStream();
+        using var zipArchive = new ZipArchive(archiveStream);
 
-        return listRepoObjects;
+        return (from entry in zipArchive.Entries
+            let zipObject = _zipFolder.ListZipObjects()
+                .First(i => i.NameZip.Name == entry.Name)
+            select zipObject.ReturnRepoObject(entry)).ToList();
     }
 }

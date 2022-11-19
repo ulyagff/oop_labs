@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using Backups.Path;
 using Backups.RepoObject;
 using Backups.Repository;
 using Backups.Storage;
@@ -9,33 +10,14 @@ namespace Backups.Archiver;
 public class Archiver
 {
     private readonly IRepository _repository;
-    private string _key;
-    private string name;
-    public Archiver(IRepository repository, string key)
+    public Archiver(IRepository repository)
     {
         _repository = repository;
-        _key = key;
-        name = key;
     }
 
-    public string Name
+    public ZipStorage CreateArchiver(List<IRepoObject> listRepoObject, IRepository repository, IPath key)
     {
-        get
-        {
-            return name;
-        }
-        set
-        {
-            name = value;
-            string temp = _key;
-            _key = $"{temp}/{value}";
-        }
-    }
-
-    public ZipStorage CreateArchiver(List<IRepoObject> listRepoObject, IRepository repository, string name)
-    {
-        Name = name;
-        using Stream temp = repository.OpenWrite(_key);
+        using Stream temp = repository.OpenWrite(key);
         using ZipArchive mainArchive = new ZipArchive(temp, ZipArchiveMode.Create);
         ZipArchiveVisitor visitor = new ZipArchiveVisitor(mainArchive);
         foreach (IRepoObject repoObject in listRepoObject)
@@ -43,6 +25,6 @@ public class Archiver
             repoObject.Accept(visitor);
         }
 
-        return new ZipStorage(_repository, visitor.FinalZipObject(_key), _key);
+        return new ZipStorage(_repository, visitor.FinalZipObject(key), key);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using Backups.Path;
 using Backups.RepoObject;
 using Backups.Repository;
 
@@ -6,7 +7,8 @@ namespace Backups.ZipObject;
 
 public interface IZipObject
 {
-    public string Name { get; }
+    public IPath NameRepo { get; }
+    public IPath NameZip { get; }
 
-    public IRepoObject ReturnRepoObject(string pathToZip, IRepository repository);
+    public IRepoObject ReturnRepoObject(ZipArchiveEntry entry);
 }

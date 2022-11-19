@@ -4,5 +4,5 @@ namespace Backups.Storage;
 
 public interface IStorage
 {
-    public List<IRepoObject> ReturnRepoObjects();
+    public IReadOnlyCollection<IRepoObject> ReturnRepoObjects();
 }

@@ -1,20 +1,26 @@
-﻿using Backups.Visitor;
+﻿using Backups.Path;
+using Backups.Visitor;
 
 namespace Backups.RepoObject;
 
 public class RepoFolder : IRepoFolder
 {
- public RepoFolder(Func<IReadOnlyCollection<IRepoObject>> objects, string name)
- {
-     Objects = objects;
-     Name = name;
- }
+    private Func<IReadOnlyCollection<IRepoObject>> _funcObjects;
+    public RepoFolder(Func<IReadOnlyCollection<IRepoObject>> objects, IPath name)
+    {
+        _funcObjects = objects;
+        Name = name;
+    }
 
- public string Name { get; }
- public Func<IReadOnlyCollection<IRepoObject>> Objects { get; }
+    public IPath Name { get; }
 
- public void Accept(IVisitor visitor)
- {
-     visitor.Visit(this);
- }
+    public IReadOnlyCollection<IRepoObject> Objects()
+    {
+        return _funcObjects();
+    }
+
+    public void Accept(IVisitor visitor)
+    {
+        visitor.Visit(this);
+    }
 }

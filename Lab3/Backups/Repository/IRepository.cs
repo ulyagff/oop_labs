@@ -1,9 +1,10 @@
-﻿using Backups.RepoObject;
+﻿using Backups.Path;
+using Backups.RepoObject;
 
 namespace Backups.Repository;
 
 public interface IRepository
 {
-    public Stream OpenWrite(string path);
-    public IRepoObject ReturnRepoObject(string key);
+    public Stream OpenWrite(IPath path);
+    public IRepoObject ReturnRepoObject(IPath key);
 }

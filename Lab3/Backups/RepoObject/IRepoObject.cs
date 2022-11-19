@@ -1,9 +1,10 @@
-﻿using Backups.Visitor;
+﻿using Backups.Path;
+using Backups.Visitor;
 
 namespace Backups.RepoObject;
 
 public interface IRepoObject
 {
-    public string Name { get; }
+    public IPath Name { get; }
     public void Accept(IVisitor visitor);
 }

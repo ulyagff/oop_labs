@@ -13,14 +13,11 @@ public class SplitStorage : IStorage
         _listZipStorage = listZipStorage;
     }
 
-    public List<IRepoObject> ReturnRepoObjects()
+    public IReadOnlyCollection<IRepoObject> ReturnRepoObjects()
     {
-        var listRepoObjects = new List<IRepoObject>();
-        foreach (var storage in _listZipStorage)
-        {
-            listRepoObjects.Add(storage.ReturnRepoObjects().First());
-        }
-
-        return listRepoObjects;
+        return _listZipStorage
+            .Select(storage => storage.ReturnRepoObjects()
+            .First())
+            .ToList();
     }
 }

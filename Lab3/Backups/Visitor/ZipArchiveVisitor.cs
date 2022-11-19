@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using Backups.Path;
 using Backups.RepoObject;
 using Backups.ZipObject;
 
@@ -17,22 +18,23 @@ public class ZipArchiveVisitor : IVisitor
         _archives.Push(archive);
     }
 
-    public ZipFolder FinalZipObject(string name)
+    public ZipFolder FinalZipObject(IPath name)
     {
         return new ZipFolder(name, _listsZipObjects.Peek());
     }
 
     public void Visit(IRepoFile file)
     {
-        ZipArchiveEntry entry = _archives.Peek().CreateEntry($"{file.Name}.zip");
-        file.OpenStream().CopyTo(entry.Open());
+        ZipArchiveEntry entry = _archives.Peek().CreateEntry($"{file.Name.Name}.zip");
+        using Stream fileStream = entry.Open();
+        file.OpenStream().CopyTo(fileStream);
         _listsZipObjects.Peek().Add(new ZipObject.ZipFile(file.Name));
     }
 
     public void Visit(IRepoFolder folder)
     {
-        ZipArchiveEntry entry = _archives.Peek().CreateEntry($"{folder.Name}.zip");
-        var entryStream = entry.Open();
+        ZipArchiveEntry entry = _archives.Peek().CreateEntry($"{folder.Name.Name}.zip");
+        using Stream entryStream = entry.Open();
         using var archive = new ZipArchive(entryStream);
         _archives.Push(archive);
         _listsZipObjects.Push(new List<IZipObject>());

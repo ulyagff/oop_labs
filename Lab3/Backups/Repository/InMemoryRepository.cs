@@ -1,4 +1,5 @@
-﻿using Backups.RepoObject;
+﻿using Backups.Path;
+using Backups.RepoObject;
 using Zio;
 using Zio.FileSystems;
 
@@ -7,65 +8,67 @@ namespace Backups.Repository;
 public class InMemoryRepository : IRepository, IDisposable
 {
     private readonly MemoryFileSystem _fileSystem;
-    private Func<string, Stream> _fileFunc;
-    private Func<string, IReadOnlyCollection<IRepoObject>> _folderFunc;
+    private Func<IPath, Stream> _fileFunc;
+    private Func<IPath, IReadOnlyCollection<IRepoObject>> _folderFunc;
 
-    public InMemoryRepository(MemoryFileSystem fileSystem, string path)
+    public InMemoryRepository(MemoryFileSystem fileSystem, IPath basePath)
     {
         _fileSystem = fileSystem;
-        Path = path;
+        BasePath = basePath;
         _fileFunc = (path) => this.ReturnRepoFile(path);
         _folderFunc = (path) => this.ConstructRepoFolder(path);
     }
 
-    public string Path { get; }
+    public IPath BasePath { get; }
 
-    public Stream OpenWrite(string path)
+    public Stream OpenWrite(IPath path)
     {
-        string fullPath = $"{Path}{path}";
-        return _fileSystem.OpenFile(fullPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        return _fileSystem.OpenFile(BasePath.ConcatinatePath(path), FileMode.OpenOrCreate, FileAccess.Write);
     }
 
-    public IRepoObject ReturnRepoObject(string key)
+    public IRepoObject ReturnRepoObject(IPath key)
     {
-        string fullPath = $"{Path}{key}";
-        FileAttributes backupObjectAttributes = _fileSystem.GetAttributes(fullPath);
+        FileAttributes backupObjectAttributes = _fileSystem.GetAttributes(BasePath.ConcatinatePath(key));
+        var fullPath = new Path.Path(BasePath.ConcatinatePath(key));
+        var nameRepoObject = new Path.Path(key.Name);
         if ((backupObjectAttributes & FileAttributes.Directory) == FileAttributes.Directory)
         {
-            return new RepoFolder(() => _folderFunc(fullPath), key); // TODO: доставать имя
+            return new RepoFolder(() => _folderFunc(fullPath), nameRepoObject);
         }
         else
         {
-            return new RepoFile(() => _fileFunc(fullPath), key); // TODO: нужно доставать из пути имя
+            return new RepoFile(() => _fileFunc(fullPath), nameRepoObject);
         }
     }
 
-    public IReadOnlyCollection<IRepoObject> ConstructRepoFolder(string path)
+    public void Dispose()
+    {
+        _fileSystem.Dispose();
+    }
+
+    private IReadOnlyCollection<IRepoObject> ConstructRepoFolder(IPath fullPath)
     {
         var listRepoObjects = new List<IRepoObject>();
-        foreach (var repoObject in _fileSystem.EnumerateFiles(path))
+        foreach (var repoObject in _fileSystem.EnumerateFiles(fullPath.ToString()))
         {
             FileAttributes backupObjectAttributes = _fileSystem.GetAttributes(repoObject);
+            IPath pathToSubRepoObject = new Path.Path(repoObject.ToString());
+            IPath nameSubRepoObject = new Path.Path(pathToSubRepoObject.Name);
             if ((backupObjectAttributes & FileAttributes.Directory) == FileAttributes.Directory)
             {
-                listRepoObjects.Add(new RepoFolder(() => _folderFunc(repoObject.ToString()), repoObject.GetName()));
+                listRepoObjects.Add(new RepoFolder(() => _folderFunc(pathToSubRepoObject), nameSubRepoObject));
             }
             else
             {
-                listRepoObjects.Add(new RepoFile(() => _fileFunc(repoObject.ToString()), repoObject.GetName())); // TODO: доставать имя из пути
+                listRepoObjects.Add(new RepoFile(() => _fileFunc(pathToSubRepoObject), nameSubRepoObject));
             }
         }
 
         return listRepoObjects;
     }
 
-    public Stream ReturnRepoFile(string path)
+    private Stream ReturnRepoFile(IPath fullPath)
     {
-        return _fileSystem.OpenFile(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-    }
-
-    public void Dispose()
-    {
-        _fileSystem.Dispose();
+        return _fileSystem.OpenFile(fullPath.ToString(), FileMode.Open, FileAccess.ReadWrite);
     }
 }

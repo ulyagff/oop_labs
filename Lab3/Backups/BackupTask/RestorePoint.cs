@@ -4,14 +4,17 @@ namespace Backups.BackupTask;
 
 public class RestorePoint
 {
-    private List<BackupObject.BackupObject> _listBackupObjects;
-    private IStorage _storage;
-    private DateTime _time;
+    private readonly List<BackupObject.BackupObject> _listBackupObjects;
 
     public RestorePoint(List<BackupObject.BackupObject> listBackupObjects, IStorage storage, DateTime time)
     {
         _listBackupObjects = listBackupObjects;
-        _storage = storage;
-        _time = time;
+        Storage = storage;
+        Time = time;
     }
+
+    public IStorage Storage { get; }
+    public DateTime Time { get; }
+
+    public IReadOnlyCollection<BackupObject.BackupObject> ListBackupObjects() => _listBackupObjects;
 }

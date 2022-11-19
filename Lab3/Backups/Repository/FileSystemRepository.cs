@@ -1,62 +1,64 @@
-﻿using Backups.RepoObject;
+﻿using Backups.Path;
+using Backups.RepoObject;
 
 namespace Backups.Repository;
 
 public class Repository : IRepository
 {
-    private Func<string, Stream> _fileFunc;
-    private Func<string, IReadOnlyCollection<IRepoObject>> _folderFunc;
-
-    public Repository(string repoPath)
+    private Func<IPath, Stream> _fileFunc;
+    private Func<IPath, IReadOnlyCollection<IRepoObject>> _folderFunc;
+    public Repository(IPath basePath)
     {
-        Path = repoPath; // TODO: validate
+        BasePath = basePath;
         _fileFunc = (path) => this.ReturnRepoFile(path);
         _folderFunc = (path) => this.ConstructRepoFolder(path);
     }
 
-    public string Path { get; }
+    public IPath BasePath { get; }
 
-    public Stream OpenWrite(string path)
+    public Stream OpenWrite(IPath path)
     {
-        string fullPath = $"{Path}{path}";
-        return File.Open(path, FileMode.OpenOrCreate);
+        return File.Open(BasePath.ConcatinatePath(path), FileMode.OpenOrCreate, FileAccess.Write);
     }
 
-    public IRepoObject ReturnRepoObject(string key)
+    public IRepoObject ReturnRepoObject(IPath key)
     {
-        string fullPath = $"{Path}{key}";
-        FileAttributes backupObjectAttributes = File.GetAttributes(fullPath);
+        FileAttributes backupObjectAttributes = File.GetAttributes(BasePath.ConcatinatePath(key));
+        var fullPath = new Path.Path(BasePath.ConcatinatePath(key));
+        var nameRepoObject = new Path.Path(key.Name);
         if ((backupObjectAttributes & FileAttributes.Directory) == FileAttributes.Directory)
         {
-            return new RepoFolder(() => _folderFunc(fullPath), key); // TODO: доставать имя
+            return new RepoFolder(() => _folderFunc(fullPath), nameRepoObject);
         }
         else
         {
-            return new RepoFile(() => _fileFunc(fullPath), key); // TODO: нужно доставать из пути имя
+            return new RepoFile(() => _fileFunc(fullPath), nameRepoObject);
         }
     }
 
-    public IReadOnlyCollection<IRepoObject> ConstructRepoFolder(string path)
+    private IReadOnlyCollection<IRepoObject> ConstructRepoFolder(IPath fullPath)
     {
         var listRepoObjects = new List<IRepoObject>();
-        foreach (var repoObject in Directory.GetFiles(path))
+        foreach (var repoObject in Directory.GetFiles(fullPath.ToString()))
         {
             FileAttributes backupObjectAttributes = File.GetAttributes(repoObject);
+            IPath pathToSubRepoObject = new Path.Path(repoObject);
+            IPath nameSubRepoObject = new Path.Path(pathToSubRepoObject.Name);
             if ((backupObjectAttributes & FileAttributes.Directory) == FileAttributes.Directory)
             {
-                listRepoObjects.Add(new RepoFolder(() => _folderFunc(repoObject), repoObject));
+                listRepoObjects.Add(new RepoFolder(() => _folderFunc(pathToSubRepoObject), nameSubRepoObject));
             }
             else
             {
-                listRepoObjects.Add(new RepoFile(() => _fileFunc(repoObject), repoObject)); // TODO: доставать имя из пути
+                listRepoObjects.Add(new RepoFile(() => _fileFunc(pathToSubRepoObject), nameSubRepoObject));
             }
         }
 
         return listRepoObjects;
     }
 
-    public Stream ReturnRepoFile(string path)
+    private Stream ReturnRepoFile(IPath fullPath)
     {
-        return File.Open(path, FileMode.Open);
+        return File.Open(fullPath.ToString(), FileMode.Open, FileAccess.ReadWrite);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Backups.RepoObject;
+﻿using Backups.Path;
+using Backups.RepoObject;
 using Backups.Repository;
 
 namespace Backups.BackupObject;
@@ -7,13 +8,13 @@ public class BackupObject
 {
     private readonly IRepository _repository;
 
-    public BackupObject(IRepository repository, string key, string name)
+    public BackupObject(IRepository repository, IPath key)
     {
         _repository = repository;
         Key = key;
     }
 
-    public string Key { get; }
+    public IPath Key { get; }
 
     public IRepoObject ReturnRepoObject()
     {

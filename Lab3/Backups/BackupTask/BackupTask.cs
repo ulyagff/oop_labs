@@ -1,42 +1,57 @@
 ﻿using Backups.BackupObject;
+using Backups.BackupsException;
+using Backups.Path;
 using Backups.Repository;
+using Backups.Storage;
 using Backups.StorageAlgorithm;
 
 namespace Backups.BackupTask;
 
-public class BackupTask
+public class BackupTask : IBackupTask
 {
+    private readonly IStorageAlgorithm _storageAlgorithm;
+    private readonly IRepository _repository;
+    private readonly Archiver.Archiver _archiver;
     private List<BackupObject.BackupObject> _listBackupObjects;
-    private IStorageAlgorithm _storageAlgorithm;
-    private IRepository _repository;
-    private Archiver.Archiver _archiver;
-    private Backup _backup;
-    public BackupTask(string name, IRepository repository, IStorageAlgorithm storageAlgorithm, Archiver.Archiver archiver)
+
+    public BackupTask(IRepository repository, IStorageAlgorithm storageAlgorithm, Archiver.Archiver archiver, IPath archivePath)
     {
-        _listBackupObjects = new List<BackupObject.BackupObject>(); // TODO: validation
+        _listBackupObjects = new List<BackupObject.BackupObject>();
         _storageAlgorithm = storageAlgorithm;
         _archiver = archiver;
         _repository = repository;
-        _backup = new Backup();
+        Backup = new Backup();
         Time = DateTime.Now;
-        Name = Time.ToString("yyyy-MM-dd");
+        Name = Time.ToString("yyyy-MM-dd-HH-mm-ss-ffff");
+        ArchivePath = archivePath;
     }
 
-    public string Name { get; }
-    public DateTime Time { get; }
+    public Backup Backup { get; }
+    public string Name { get; private set; }
+    public IPath ArchivePath { get; }
+    public DateTime Time { get; private set; }
+    public IReadOnlyCollection<BackupObject.BackupObject> ListBackupObjects() => _listBackupObjects;
 
     public void AddBackupObject(BackupObject.BackupObject backupObject)
     {
-        _listBackupObjects.Add(backupObject); // TODO: validation
+        if (_listBackupObjects.Contains(backupObject))
+            throw BackupTaskException.AlreadyHadBackupObject();
+        _listBackupObjects.Add(backupObject);
     }
 
     public void RemoveBackupObject(BackupObject.BackupObject backupObject)
     {
-        _listBackupObjects.Remove(backupObject); // TODO: validation
+        if (_listBackupObjects.Count == 0)
+            throw BackupTaskException.EmptyContainerBackupObject();
+        _listBackupObjects.Remove(backupObject);
     }
 
     public void Run()
     {
-        _backup.AddRestorePoint(new RestorePoint(_listBackupObjects, _storageAlgorithm.Run(_listBackupObjects, _repository, _archiver, Name), Time));
+        Time = DateTime.Now;
+        Name = Time.ToString("yyyy-MM-dd-HH-mm-ss-ffff");
+        var fullPath = new Path.Path(ArchivePath.ConcatinatePath(Name));
+        IStorage storage = _storageAlgorithm.Run(_listBackupObjects, _repository, _archiver, fullPath);
+        Backup.AddRestorePoint(new RestorePoint(_listBackupObjects, storage, Time));
     }
 }
