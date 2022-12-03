@@ -32,6 +32,5 @@ public class BackupExtraTest
         backupTask.AddBackupObject(new BackupObject.BackupObject(repository, new Path.Path("folder1/fileB")));
         backupTask.Run(); // Assert.Equal(2, backupTask.Backup.BackupHistory.Last().Storage.ReturnRepoObjects().Count());
         backupTask.RemoveBackupObject(obj1);
-        backupTask.Run();
     }
 }
