@@ -11,7 +11,7 @@ public class SingleStorageAlgorithm : IStorageAlgorithm
     {
         var listRepoObjects = listBackupObjects
             .Select(backupObject => backupObject
-            .ReturnRepoObject())
+                .ReturnRepoObject())
             .ToList();
         return archiver.CreateArchiver(listRepoObjects, repository, path);
     }

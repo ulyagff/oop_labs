@@ -1,13 +1,12 @@
-﻿using System.IO.Compression;
-using Backups.Repository;
+﻿using Backups.Repository;
 using Backups.StorageAlgorithm;
 using Xunit;
 using Zio;
 using Zio.FileSystems;
 
-namespace Backups.Test;
+namespace Backups.Extra.Test;
 
-public class BackupsTest
+public class BackupExtraTest
 {
     [Fact]
     public void BackupTaskSplitAlgorithm()
