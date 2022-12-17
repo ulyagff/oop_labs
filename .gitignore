@@ -362,3 +362,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+MessageSystem/Models/Account.cs
+MessageSystem/Models/AccountContext.cs
+MessageSystem/Models/ErrorViewModel.cs
