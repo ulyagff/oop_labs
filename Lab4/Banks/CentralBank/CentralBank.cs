@@ -6,13 +6,21 @@ namespace Banks.CentralBank;
 
 public class CentralBank : ICentralBank
 {
+    private static CentralBank? _instance;
     private List<IBank> _banks;
     private List<ISubscriber> _subscribers;
 
-    public CentralBank()
+    private CentralBank()
     {
         _banks = new List<IBank>();
         _subscribers = new List<ISubscriber>();
+    }
+
+    public static CentralBank GetInstance()
+    {
+        if (_instance == null)
+            _instance = new CentralBank();
+        return _instance;
     }
 
     public IReadOnlyCollection<IBank> Banks() => _banks;

@@ -27,6 +27,22 @@ public class DebitBankAccount : IBankAccount
 
     public IReadOnlyCollection<ITransaction> History() => _history;
 
+    public void DoTransaction(ITransaction transaction)
+    {
+        _history.Add(transaction);
+        if (transaction.ToTranslation == this)
+        {
+            Balance += transaction.TransferAmount;
+        }
+
+        if (transaction.TranslationSource == this)
+        {
+            Balance -= transaction.TransferAmount;
+        }
+
+        transaction.Status = TransactionStatus.Completed;
+    }
+
     public void WithdrawMoney(decimal money)
     {
         if (Balance < money)

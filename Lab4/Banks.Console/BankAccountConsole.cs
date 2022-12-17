@@ -60,6 +60,12 @@ public class BankAccountConsole
         account.WithdrawMoney(deposit);
     }
 
+    public static void TransferMoney(IBankAccount account)
+    {
+        decimal deposit = AnsiConsole.Ask<int>("how much money do you want transfer to the account");
+        account.TransferMoney(account, deposit);
+    }
+
     public static void Balance(IBankAccount account)
     {
         AnsiConsole.MarkupLineInterpolated($"Balance is {account.Balance}");

@@ -11,7 +11,7 @@ public class BankService
 
     public BankService()
     {
-        MainBank = new CentralBank.CentralBank();
+        MainBank = CentralBank.CentralBank.GetInstance();
         _clients = new List<IClient>();
     }
 

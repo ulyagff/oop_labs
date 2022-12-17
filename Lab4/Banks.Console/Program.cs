@@ -1,6 +1,7 @@
 ﻿using Banks.Bank;
 using Banks.BankAccount;
 using Banks.BankServise;
+using Banks.Client;
 
 namespace Banks.Console;
 using Spectre.Console;
@@ -75,6 +76,20 @@ public static class Program
                             AnsiConsole.MarkupLine("Done!");
                             break;
                         case "transfer money":
+                            string selectBankTransfer = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                    .Title("Where your Bank Account?")
+                                    .PageSize(10)
+                                    .AddChoices(service.BanksName()));
+                            IBank bankToTransfer = service.GetBank(selectBank);
+
+                            string selectAccountToTransfer = AnsiConsole.Prompt(
+                                new SelectionPrompt<string>()
+                                    .Title("which of these accounts is needed?")
+                                    .PageSize(10)
+                                    .AddChoices(bank.ClientOfAccount()));
+                            IBankAccount accountToTransfer = bank.GetBankAccount(selectAccount);
+                            BankAccountConsole.TransferMoney(accountToTransfer);
                             AnsiConsole.MarkupLine("Done!");
                             break;
                         case "Check balance":

@@ -9,4 +9,6 @@ public interface ITransaction
     public IBankAccount? ToTranslation { get; }
     public TransactionStatus Status { get; set; }
     public Guid Id { get; }
+    public void Execute();
+    public void Undo();
 }

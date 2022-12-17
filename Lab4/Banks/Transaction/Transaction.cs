@@ -18,4 +18,17 @@ public class Transaction : ITransaction
     public IBankAccount? ToTranslation { get; }
     public TransactionStatus Status { get; set; }
     public Guid Id { get; }
+    public void Execute()
+    {
+        TranslationSource?.DoTransaction(this);
+
+        ToTranslation?.DoTransaction(this);
+    }
+
+    public void Undo()
+    {
+        TranslationSource?.CancelTransaction(this);
+
+        ToTranslation?.CancelTransaction(this);
+    }
 }
